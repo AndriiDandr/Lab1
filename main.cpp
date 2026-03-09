@@ -4,5 +4,5 @@
 using namespace std;
 
 int main(){
-    total("./input.txt");
+    total("input.txt");
 }
