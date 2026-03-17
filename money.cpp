@@ -11,18 +11,23 @@ void dodavanya(Money &money, const Money &addMoney){
 void mnozhenya(Money &money, int count)
 {
     int totalCop = (money.grn * 100 + money.cop) * count;
-
     money.grn = totalCop / 100;
     money.cop = totalCop % 100;
 }
 
 void okryglenya(Money &money) {
-    int remainder = money.cop % 10;    
-    money.cop = (money.cop / 10) * 10; 
+    int remainder = money.cop % 10;
+
+    money.cop -= money.cop % 10;
 
     if (remainder >= 8) {
-        money.cop += 10; 
+        money.cop += 10;
     }
+    if(money.cop >= 100){
+            int newGrn = money.cop / 100;
+            money.grn += newGrn;
+            money.cop %= 100;
+        }
 }
 
 
@@ -39,10 +44,11 @@ void total(const char *path){
         char buffer[256];
         int grn;
         short int cop;
+        char extra;
         int count;
         char product[256];
         while (fgets(buffer, sizeof(buffer), file)) {
-            if (sscanf(buffer, "%s %u %hu %u", product, &grn, &cop, &count) == 4) {
+            if (sscanf(buffer, "%s %u %hu %u", product, &grn, &cop, &count) != 5) {
                 if(count < 0 || grn < 0 || cop < 0){
                     cout << "Неправильний формат вводу"<< endl;
                     fclose(file);
@@ -60,15 +66,13 @@ void total(const char *path){
             }
         }
 
-        if(money.cop >= 100){
-            int newGrn = money.cop / 100;
-            money.grn += newGrn;
-            money.cop %= 100;
-        }
+        
 
         cout << "Сума: ";
         printMoney(money); 
         okryglenya(money);  
+
+        
         
         cout << "Заокруглення: ";
         printMoney(money); 
