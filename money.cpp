@@ -1,11 +1,19 @@
 #include "money.h"
 #include <iostream>
+#include <stdio.h>
+#include <windows.h>
 
 using namespace std;
 
 void dodavanya(Money &money, const Money &addMoney){
     money.grn += addMoney.grn;
     money.cop += addMoney.cop;
+
+    if(money.cop >= 100){
+            int newGrn = money.cop / 100;
+            money.grn += newGrn;
+            money.cop %= 100;
+        }
 }
 
 void mnozhenya(Money &money, int count)
@@ -17,17 +25,17 @@ void mnozhenya(Money &money, int count)
 
 void okryglenya(Money &money) {
     int remainder = money.cop % 10;
-
-    money.cop -= money.cop % 10;
+    money.cop -= remainder;
 
     if (remainder >= 8) {
         money.cop += 10;
     }
-    if(money.cop >= 100){
-            int newGrn = money.cop / 100;
-            money.grn += newGrn;
-            money.cop %= 100;
-        }
+
+    if (money.cop == 100) {
+        money.grn += money.cop / 100;
+        money.cop %= 100;
+    }
+    
 }
 
 
@@ -44,11 +52,10 @@ void total(const char *path){
         char buffer[256];
         int grn;
         short int cop;
-        char extra;
         int count;
         char product[256];
         while (fgets(buffer, sizeof(buffer), file)) {
-            if (sscanf(buffer, "%s %u %hu %u", product, &grn, &cop, &count) != 5) {
+            if (sscanf(buffer, "%s %u %hu %u", product, &grn, &cop, &count) == 4) {
                 if(count < 0 || grn < 0 || cop < 0){
                     cout << "Неправильний формат вводу"<< endl;
                     fclose(file);
@@ -66,13 +73,10 @@ void total(const char *path){
             }
         }
 
-        
-
         cout << "Сума: ";
         printMoney(money); 
         okryglenya(money);  
 
-        
         
         cout << "Заокруглення: ";
         printMoney(money); 
